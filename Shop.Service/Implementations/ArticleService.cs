@@ -13,7 +13,7 @@ namespace Shop.Service.Implementations
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<List<Article>> GetAll()
+        public async Task<IEnumerable<Article>> GetAll()
         {
             var articles = await _unitOfWork.Repository.GetAll();
             return articles;

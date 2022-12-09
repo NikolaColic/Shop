@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33122.133
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shop", "Shop\Shop.csproj", "{55E3528B-7552-407F-BDA2-3F32D083F984}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shop.Api", "Shop\Shop.Api.csproj", "{55E3528B-7552-407F-BDA2-3F32D083F984}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vendor", "Vendor\Vendor.csproj", "{0C28B58D-0932-48EF-A573-8334B5298EE6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vendor.Api", "Vendor\Vendor.Api.csproj", "{0C28B58D-0932-48EF-A573-8334B5298EE6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{A2932E65-7FBA-4CB2-94DD-AF22D1807837}"
 EndProject

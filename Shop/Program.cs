@@ -1,4 +1,7 @@
+using Infrastructure.AppConfig.Implementations;
+using Infrastructure.AppConfig.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Shop.Api.Constants;
 using Shop.Repository.EF;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,11 +18,19 @@ builder.Services.AddSwaggerGen();
 
 //EF Configuration
 
-builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(configuration.GetConnectionString("Connection")));
+builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(configuration.GetConnectionString(SettingConstants.ConnectionString)));
 
 //LazyCache Configuration 
 
 builder.Services.AddLazyCache();
+
+//AppConfig
+
+var appConfig = new AppConfig();
+
+configuration.GetSection(SettingConstants.AppConfig).Bind(appConfig);
+builder.Services.AddSingleton<IAppConfig>(appConfig);
+
 
 var app = builder.Build();
 
