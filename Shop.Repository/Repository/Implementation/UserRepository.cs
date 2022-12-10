@@ -5,7 +5,7 @@ using Shop.Repository.EF;
 
 namespace Shop.Repository.Repository.Implementation
 {
-    internal class UserRepository : IRepository<Article>
+    public class UserRepository : IRepository<User>
     {
         public readonly ApplicationDbContext _db;
         public UserRepository(ApplicationDbContext context)
@@ -13,28 +13,28 @@ namespace Shop.Repository.Repository.Implementation
             this._db = context;
         }
 
-        public async Task<IEnumerable<Article>> GetAll()
+        public async Task<IEnumerable<User>> GetAll()
         {
-            var users = await _db.Article
+            var users = await _db.User
                 .ToListAsync();
 
             return users;
         }
 
-        public async Task<Article> GetById(int id)
+        public async Task<User> GetById(int id)
         {
-            var user = await _db.Article
+            var user = await _db.User
                 .SingleOrDefaultAsync(e => e.Id == id);
 
             return user;
         }
 
-        public Task<bool> Insert(Article entity)
+        public Task<User> Insert(User entity)
         {
             throw new NotImplementedException();
         }
 
-        public Task<bool> Update(Article entity)
+        public Task<User> Update(User entity)
         {
             throw new NotImplementedException();
         }

@@ -11,9 +11,9 @@ namespace Shop.Api.Controllers
     [ApiController]
     public class ArticleController : ControllerBase
     {
-        private readonly IProxyService<Article> _service;
+        private readonly IArticleProxyService _service;
 
-        public ArticleController(IProxyService<Article> service)
+        public ArticleController(IArticleProxyService service)
         {
             _service = service;
         }
@@ -42,6 +42,32 @@ namespace Shop.Api.Controllers
             }
 
             return Ok(article);
+        }
+
+        [HttpPost("{key}/buy")]
+        public async Task<ActionResult<Article>> Buy(int id)
+        {
+            var article = await _service.Buy(id);
+
+            if (article == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(article);
+        }
+
+        [HttpPost("order")]
+        public async Task<ActionResult<Article>> Order([FromBody] List<int> keys)
+        {
+            var articles = await _service.Order(keys);
+
+            if (articles == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(articles);
         }
 
     }

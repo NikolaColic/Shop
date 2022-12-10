@@ -52,29 +52,33 @@ namespace Shop.Service.Implementations.Proxy
             return article;
         }
 
-        public async Task<bool> Insert(User entity)
+        public async Task<User> Insert(User entity)
         {
-            var status = await _articleService.Insert(entity);
+            entity = await _articleService.Insert(entity);
 
-            if (status)
+            if (entity == null)
             {
-                _appCache.Add($"{CacheKeysConstants.User}{entity.Id}", entity, DateTimeOffset.FromUnixTimeSeconds(_appConfig.CacheTime));
+                return null;
             }
 
-            return status;
+            _appCache.Add($"{CacheKeysConstants.User}{entity.Id}", entity, DateTimeOffset.FromUnixTimeSeconds(_appConfig.CacheTime));
+
+            return entity;
         }
 
-        public async Task<bool> Update(User entity)
+        public async Task<User> Update(User entity)
         {
-            var status = await _articleService.Update(entity);
+            entity = await _articleService.Update(entity);
 
-            if (status)
+            if (entity == null)
             {
-                _appCache.Remove($"{CacheKeysConstants.User}{entity.Id}");
-                _appCache.Add($"{CacheKeysConstants.User}{entity.Id}", entity, DateTimeOffset.FromUnixTimeSeconds(_appConfig.CacheTime));
+                return null;
             }
 
-            return status;
+            _appCache.Remove($"{CacheKeysConstants.User}{entity.Id}");
+            _appCache.Add($"{CacheKeysConstants.User}{entity.Id}", entity, DateTimeOffset.FromUnixTimeSeconds(_appConfig.CacheTime));
+            
+            return entity;
         }
     }
 }

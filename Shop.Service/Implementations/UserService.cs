@@ -25,16 +25,18 @@ namespace Shop.Service.Implementations
             return article;
         }
 
-        public async Task<bool> Insert(User entity)
+        public async Task<User> Insert(User entity)
         {
-            var status = await _unitOfWork.Repository.Insert(entity);
-            return status;
+            entity = await _unitOfWork.Repository.Insert(entity);
+            await _unitOfWork.Commit();
+            return entity;
         }
 
-        public async Task<bool> Update(User entity)
+        public async Task<User> Update(User entity)
         {
-            var status = await _unitOfWork.Repository.Update(entity);
-            return status;
+            entity = await _unitOfWork.Repository.Update(entity);
+            await _unitOfWork.Commit();
+            return entity;
         }
     }
 }

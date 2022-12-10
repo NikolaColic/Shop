@@ -5,12 +5,18 @@ using Shop.Repository.EF;
 
 namespace Shop.Repository.Repository.Implementation
 {
-    internal class ArticleRepository : IRepository<Article>
+    internal class ArticleRepository : IRepositoryList<Article>
     {
         public readonly ApplicationDbContext _db;
         public ArticleRepository(ApplicationDbContext context)
         {
             this._db = context;
+        }
+
+        public async Task<List<Article>> AddRange(List<Article> articles)
+        {
+            await _db.AddRangeAsync(articles);
+            return articles;
         }
 
         public async Task<IEnumerable<Article>> GetAll()
@@ -29,26 +35,13 @@ namespace Shop.Repository.Repository.Implementation
             return article;
         }
 
-        public async Task<bool> Insert(Article entity)
+        public async Task<Article> Insert(Article entity)
         {
-            if(entity.User != null)
-            {
-                var user = await _db.User
-                    .SingleOrDefaultAsync(e => e.Id == entity.User.Id);
-
-                if(user == null)
-                {
-
-                }
-
-                entity.User = user;
-            }
-
             await _db.AddAsync(entity);
-            return true;
+            return entity;
         }
 
-        public async Task<bool> Update(Article entity)
+        public async Task<Article> Update(Article entity)
         {
             var articleForUpdate = await GetById(entity.Id);
 
@@ -60,7 +53,7 @@ namespace Shop.Repository.Repository.Implementation
             _db.Entry(articleForUpdate).State = EntityState.Detached;
             _db.Update(entity);
 
-            return true;
+            return entity;
         }
     }
 }
