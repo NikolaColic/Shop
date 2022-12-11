@@ -5,7 +5,7 @@ using Shop.Repository.EF;
 
 namespace Shop.Repository.Repository.Implementation
 {
-    internal class ArticleRepository : IRepositoryList<Article>
+    public class ArticleRepository : IRepositoryList<Article>
     {
         public readonly ApplicationDbContext _db;
         public ArticleRepository(ApplicationDbContext context)

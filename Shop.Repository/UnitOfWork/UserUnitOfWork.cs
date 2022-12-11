@@ -4,11 +4,11 @@ using Shop.Repository.Repository.Implementation;
 
 namespace Shop.Repository.UnitOfWork
 {
-    public class UserUnitOfWork : UnitOfWork<Article>
+    public class UserUnitOfWork : UnitOfWork<User>
     {
         public UserUnitOfWork(ApplicationDbContext context) : base(context)
         {
-            this.Repository = new ArticleRepository(context);
+            this.Repository = new UserRepository(context);
         }
     }
 }

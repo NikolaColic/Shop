@@ -22,7 +22,7 @@ namespace Shop.Service.Implementations.Proxy
 
         public async Task<IEnumerable<User>> GetAll()
         {
-            var articles = await _appCache.GetAsync<IEnumerable<User>>(CacheKeysConstants.Users);
+            var articles = await _appCache.GetAsync<IEnumerable<User>>(CacheKeyConstants.Users);
 
             if (articles != null && articles.Any())
             {
@@ -31,14 +31,14 @@ namespace Shop.Service.Implementations.Proxy
 
             articles = await _articleService.GetAll();
 
-            _appCache.Add(CacheKeysConstants.Users, articles, DateTimeOffset.FromUnixTimeSeconds(_appConfig.CacheTime));
+            _appCache.Add(CacheKeyConstants.Users, articles, DateTimeOffset.FromUnixTimeSeconds(_appConfig.CacheTime));
 
             return articles;
         }
 
         public async Task<User> GetById(int id)
         {
-            var article = await _appCache.GetAsync<User>($"{CacheKeysConstants.User}{id}");
+            var article = await _appCache.GetAsync<User>($"{CacheKeyConstants.User}{id}");
 
             if (article != null)
             {
@@ -47,7 +47,7 @@ namespace Shop.Service.Implementations.Proxy
 
             article = await _articleService.GetById(id);
 
-            _appCache.Add($"{CacheKeysConstants.User}{id}", article, DateTimeOffset.FromUnixTimeSeconds(_appConfig.CacheTime));
+            _appCache.Add($"{CacheKeyConstants.User}{id}", article, DateTimeOffset.FromUnixTimeSeconds(_appConfig.CacheTime));
 
             return article;
         }
@@ -61,7 +61,7 @@ namespace Shop.Service.Implementations.Proxy
                 return null;
             }
 
-            _appCache.Add($"{CacheKeysConstants.User}{entity.Id}", entity, DateTimeOffset.FromUnixTimeSeconds(_appConfig.CacheTime));
+            _appCache.Add($"{CacheKeyConstants.User}{entity.Id}", entity, DateTimeOffset.FromUnixTimeSeconds(_appConfig.CacheTime));
 
             return entity;
         }
@@ -75,8 +75,8 @@ namespace Shop.Service.Implementations.Proxy
                 return null;
             }
 
-            _appCache.Remove($"{CacheKeysConstants.User}{entity.Id}");
-            _appCache.Add($"{CacheKeysConstants.User}{entity.Id}", entity, DateTimeOffset.FromUnixTimeSeconds(_appConfig.CacheTime));
+            _appCache.Remove($"{CacheKeyConstants.User}{entity.Id}");
+            _appCache.Add($"{CacheKeyConstants.User}{entity.Id}", entity, DateTimeOffset.FromUnixTimeSeconds(_appConfig.CacheTime));
             
             return entity;
         }

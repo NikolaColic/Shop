@@ -1,6 +1,6 @@
 ﻿namespace Shop.Service.Constants
 {
-    public static class CacheKeysConstants
+    public static class CacheKeyConstants
     {
         public const string Articles = "Articles";
         public const string Article = "Article";

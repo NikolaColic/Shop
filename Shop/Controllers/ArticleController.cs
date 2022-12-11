@@ -1,12 +1,14 @@
 ﻿using Data.Entities;
-using Infrastructure.Service.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shop.Service.Interfaces.Proxy;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-
 namespace Shop.Api.Controllers
 {
+    /// <summary>
+    /// Article controller
+    /// </summary>
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ArticleController : ControllerBase
@@ -18,6 +20,10 @@ namespace Shop.Api.Controllers
             _service = service;
         }
 
+        /// <summary>
+        /// Get all articles
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Article>>> Get()
         {
@@ -31,6 +37,11 @@ namespace Shop.Api.Controllers
             return Ok(articles);
         }
 
+        /// <summary>
+        /// Get article by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet("{id}")]
         public async Task<ActionResult<Article>> GetById(int id)
         {
@@ -44,6 +55,12 @@ namespace Shop.Api.Controllers
             return Ok(article);
         }
 
+        /// <summary>
+        /// Customer buy article
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [Authorize(Policy = "Customer")]
         [HttpPost("{key}/buy")]
         public async Task<ActionResult<Article>> Buy(int id)
         {
@@ -57,6 +74,12 @@ namespace Shop.Api.Controllers
             return Ok(article);
         }
 
+        /// <summary>
+        /// Admin order articles from vendor
+        /// </summary>
+        /// <param name="keys"></param>
+        /// <returns></returns>
+        [Authorize(Policy = "Admin")]
         [HttpPost("order")]
         public async Task<ActionResult<Article>> Order([FromBody] List<int> keys)
         {

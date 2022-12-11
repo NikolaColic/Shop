@@ -31,14 +31,14 @@ namespace Shop.Service.Implementations.Proxy
                 return null;
             }
 
-            _appCache.Remove($"{CacheKeysConstants.Article}{entity.Key}");
-            _appCache.Add($"{CacheKeysConstants.Article}{entity.Key}", entity, DateTimeOffset.FromUnixTimeSeconds(_appConfig.CacheTime));
+            _appCache.Remove($"{CacheKeyConstants.Article}{entity.Key}");
+            _appCache.Add($"{CacheKeyConstants.Article}{entity.Key}", entity, DateTimeOffset.FromUnixTimeSeconds(_appConfig.CacheTime));
             return entity;
         }
 
         public async Task<IEnumerable<Article>> GetAll()
         {
-            var articles = await _appCache.GetAsync<IEnumerable<Article>>(CacheKeysConstants.Articles); 
+            var articles = await _appCache.GetAsync<IEnumerable<Article>>(CacheKeyConstants.Articles); 
 
             if(articles != null && articles.Any())
             {
@@ -47,14 +47,14 @@ namespace Shop.Service.Implementations.Proxy
 
             articles = await _articleService.GetAll();
 
-            _appCache.Add(CacheKeysConstants.Articles, articles, DateTimeOffset.FromUnixTimeSeconds(_appConfig.CacheTime));
+            _appCache.Add(CacheKeyConstants.Articles, articles, DateTimeOffset.FromUnixTimeSeconds(_appConfig.CacheTime));
 
             return articles;
         }
 
         public async Task<Article> GetById(int id)
         {
-            var article = await _appCache.GetAsync<Article>($"{CacheKeysConstants.Article}{id}");
+            var article = await _appCache.GetAsync<Article>($"{CacheKeyConstants.Article}{id}");
 
             if (article != null)
             {
@@ -63,7 +63,7 @@ namespace Shop.Service.Implementations.Proxy
 
             article = await _articleService.GetById(id);
 
-            _appCache.Add($"{CacheKeysConstants.Article}{id}", article, DateTimeOffset.FromUnixTimeSeconds(_appConfig.CacheTime));
+            _appCache.Add($"{CacheKeyConstants.Article}{id}", article, DateTimeOffset.FromUnixTimeSeconds(_appConfig.CacheTime));
 
             return article;
         }
@@ -77,7 +77,7 @@ namespace Shop.Service.Implementations.Proxy
                 return null;
             }
 
-            _appCache.Add($"{CacheKeysConstants.Article}{entity.Key}", entity, DateTimeOffset.FromUnixTimeSeconds(_appConfig.CacheTime));
+            _appCache.Add($"{CacheKeyConstants.Article}{entity.Key}", entity, DateTimeOffset.FromUnixTimeSeconds(_appConfig.CacheTime));
             return entity;
         }
 
@@ -92,7 +92,7 @@ namespace Shop.Service.Implementations.Proxy
 
             foreach (var article in articles)
             {
-                _appCache.Add($"{CacheKeysConstants.Article}{article.Key}", articles, DateTimeOffset.FromUnixTimeSeconds(_appConfig.CacheTime));
+                _appCache.Add($"{CacheKeyConstants.Article}{article.Key}", articles, DateTimeOffset.FromUnixTimeSeconds(_appConfig.CacheTime));
             }
 
             return articles;
@@ -107,8 +107,8 @@ namespace Shop.Service.Implementations.Proxy
                 return null;
             }
 
-            _appCache.Remove($"{CacheKeysConstants.Article}{entity.Key}");
-            _appCache.Add($"{CacheKeysConstants.Article}{entity.Key}", entity, DateTimeOffset.FromUnixTimeSeconds(_appConfig.CacheTime));
+            _appCache.Remove($"{CacheKeyConstants.Article}{entity.Key}");
+            _appCache.Add($"{CacheKeyConstants.Article}{entity.Key}", entity, DateTimeOffset.FromUnixTimeSeconds(_appConfig.CacheTime));
 
             return entity;
         }
