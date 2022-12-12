@@ -1,4 +1,5 @@
 ﻿using Data.Entities;
+using Infrastructure.Exceptions;
 using Infrastructure.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Shop.Repository.EF;
@@ -24,6 +25,11 @@ namespace Shop.Repository.Repository.Implementation
             var articles = await _db.Article
                 .ToListAsync();
 
+            if (articles is null)
+            {
+                throw new EntityNotFoundException($"{nameof(Article)} doesn't exists");
+            }
+
             return articles;
         }
 
@@ -31,6 +37,11 @@ namespace Shop.Repository.Repository.Implementation
         {
             var article = await _db.Article
                 .SingleOrDefaultAsync(e => e.Id == id);
+
+            if (article is null)
+            {
+                throw new EntityNotFoundException($"{nameof(Article)} doesn't exist");
+            }
 
             return article;
         }
@@ -44,11 +55,6 @@ namespace Shop.Repository.Repository.Implementation
         public async Task<Article> Update(Article entity)
         {
             var articleForUpdate = await GetById(entity.Id);
-
-            if(articleForUpdate == null)
-            {
-
-            }
 
             _db.Entry(articleForUpdate).State = EntityState.Detached;
             _db.Update(entity);

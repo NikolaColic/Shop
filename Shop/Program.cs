@@ -1,6 +1,7 @@
 using Data.Entities;
 using Infrastructure.AppConfig.Implementations;
 using Infrastructure.AppConfig.Interfaces;
+using Infrastructure.Execution.Interfaces;
 using Infrastructure.Repository.Interfaces;
 using Infrastructure.Service.Interfaces;
 using Infrastructure.UnitOfWork.Interfaces;
@@ -9,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Shop.Api.Constants;
+using Shop.Api.Middleware;
 using Shop.Repository.EF;
 using Shop.Repository.Repository.Implementation;
 using Shop.Repository.UnitOfWork;
@@ -21,12 +23,29 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+//Cors
+var Cors = "Policy";
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(Cors,
+    builder =>
+    {
+        builder.AllowAnyOrigin()
+        .AllowAnyHeader()
+        .AllowAnyMethod();
+    });
+});
 
 // Add services to the container.
 var configuration = builder.Configuration;
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+
+//Logger Registration
+
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
 
 //Services Registration 
 
@@ -46,6 +65,10 @@ builder.Services.AddScoped<IUnitOfWork<User>, UserUnitOfWork>();
 builder.Services.AddScoped<IRepositoryList<Article>, ArticleRepository>();
 builder.Services.AddScoped<IUserRepository<User>, UserRepository>();
 
+//UserInfo Registttration
+var userInfo = new UserInfo();
+builder.Services.AddSingleton<IUserInfo>(userInfo);
+
 //Authentication Configuration
 
 builder.Services.AddAuthentication(options =>
@@ -63,10 +86,9 @@ builder.Services.AddAuthentication(options =>
             ValidateIssuer = true,
             ValidateAudience = true,
             ValidateLifetime = true,
-            RoleClaimType = ClaimTypes.Role,
-            ValidAudience = configuration["JWT:ValidAudience"],
-            ValidIssuer = configuration["JWT:ValidIssuer"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Secret"]))
+            ValidAudience = configuration["JWT:Audience"],
+            ValidIssuer = configuration["JWT:Issuer"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Key"]))
         };
     });
 
@@ -77,9 +99,8 @@ builder.Services.AddSwaggerGen(swagger =>
     swagger.SwaggerDoc("v1", new OpenApiInfo
     {
         Version = "v1",
-        Title = "ASP.NET 5 Web API",
+        Title = "Shop enigmatry",
     });
-
     swagger.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
     {
         Name = "Authorization",
@@ -103,14 +124,15 @@ builder.Services.AddSwaggerGen(swagger =>
 
         }
     });
+
 });
 
 //Authorization Configuration
 
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("Admin", policy => policy.RequireRole("Admin"));
-    options.AddPolicy("Customer", policy => policy.RequireRole("Customer"));
+    options.AddPolicy("Admin", policy => policy.RequireClaim(ClaimTypes.Role, "Admin"));
+    options.AddPolicy("Customer", policy => policy.RequireClaim(ClaimTypes.Role, "Customer"));
 
 });
 
@@ -132,16 +154,16 @@ builder.Services.AddSingleton<IAppConfig>(appConfig);
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseCors(Cors);
+app.UseSwaggerUI();
 
+
+app.ConfigureExceptionMiddleware(); 
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
+app.ConfigureAuthenticationMiddleware();
 app.UseAuthorization();
 
 app.MapControllers();

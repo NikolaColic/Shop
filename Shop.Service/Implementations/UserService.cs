@@ -1,4 +1,5 @@
 ﻿using Data.Entities;
+using Infrastructure.Exceptions;
 using Infrastructure.Repository.Interfaces;
 using Infrastructure.Service.Interfaces;
 using Infrastructure.UnitOfWork.Interfaces;
@@ -56,17 +57,15 @@ namespace Shop.Service.Implementations
         #region AuthService
         public async Task<TokenModelDto> Authorize(string username, string password)
         {
-            var userRepository = _unitOfWork.Repository as IUserRepository<User>;
-
+            if (_unitOfWork.Repository is not IUserRepository<User> userRepository)
+            {
+                throw new Exception("User repository doesn't exist");
+            }
+            
             var user = await userRepository.CheckUser(username, password);
 
-            if(user == null)
-            {
-
-            }
-
             var tokenModel = CreateTokens(user);
-            var expires = Convert.ToDouble(_configuration["RefreshTokenExpireInDays"]);
+            var expires = Convert.ToDouble(_configuration["JWT:RefreshTokenExpireInDays"]);
 
             user.RefreshToken = tokenModel.RefreshToken;
             user.RefreshTokenExpiryTime = DateTime.Now.AddDays(expires);
@@ -86,23 +85,18 @@ namespace Shop.Service.Implementations
 
             if(userId == null)
             {
-
+                throw new BadRequestEntityException("Claim id doesn't exist");
             }
 
             var user = await _unitOfWork.Repository.GetById(Convert.ToInt32(userId));
 
-            if (user == null)
+            if (user.RefreshToken == null || user.RefreshToken != tokenModel.RefreshToken || user.RefreshTokenExpiryTime < DateTime.Now)
             {
-
-            }
-
-            if(user.RefreshToken == null || user.RefreshToken != tokenModel.RefreshToken || user.RefreshTokenExpiryTime < DateTime.Now)
-            {
-
+                throw new UnproccesableException("Refresh token isn't valid");
             }
 
             var token = CreateTokens(user);
-            var expires = Convert.ToDouble(_configuration["RefreshTokenExpireInDays"]);
+            var expires = Convert.ToDouble(_configuration["JWT:RefreshTokenExpireInDays"]);
             user.RefreshToken = tokenModel.RefreshToken;
             user.RefreshTokenExpiryTime = DateTime.Now.AddDays(expires);
 
@@ -171,7 +165,7 @@ namespace Shop.Service.Implementations
                     new Claim(ClaimConstants.Username, user.Username),
                     new Claim(ClaimTypes.Role, user.Role),
                 }),
-                Expires = DateTime.UtcNow.AddMinutes(expires),
+                Expires = DateTime.Now.AddMinutes(expires),
                 Issuer = issuer,
                 Audience = audience,
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha512Signature)
@@ -187,8 +181,8 @@ namespace Shop.Service.Implementations
 
         private async Task RevokeUser(User user)
         {
-            user.RefreshToken = default;
-            user.RefreshTokenExpiryTime = default;
+            user.RefreshToken = string.Empty;
+            user.RefreshTokenExpiryTime = null;
             await _unitOfWork.Repository.Update(user);
         }
 
@@ -199,7 +193,7 @@ namespace Shop.Service.Implementations
                 ValidateAudience = false,
                 ValidateIssuer = false,
                 ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"])),
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Key"])),
                 ValidateLifetime = false
             };
 
@@ -207,9 +201,9 @@ namespace Shop.Service.Implementations
 
             var identity = tokenHandler.ValidateToken(accessToken, tokenValidationParameters, out SecurityToken securityToken);
             
-            if (securityToken is not JwtSecurityToken jwtSecurityToken || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
+            if (securityToken is not JwtSecurityToken jwtSecurityToken)
             {
-                throw new SecurityTokenException("Invalid token");
+                throw new BadRequestEntityException("Invalid token");
             }
 
             return identity;

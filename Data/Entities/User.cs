@@ -2,6 +2,7 @@
 
 namespace Data.Entities
 {
+    [Serializable]
     public class User
     {
         [Key]

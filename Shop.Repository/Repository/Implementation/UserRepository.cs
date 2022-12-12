@@ -1,4 +1,5 @@
 ﻿using Data.Entities;
+using Infrastructure.Exceptions;
 using Infrastructure.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Shop.Repository.EF;
@@ -18,6 +19,11 @@ namespace Shop.Repository.Repository.Implementation
             var user = await this._db.User
                 .FirstOrDefaultAsync(e => e.Username == username && e.Password == password);
 
+            if(user is null)
+            {
+                throw new BadRequestEntityException("Bad username or password!");
+            }
+
             return user;
         }
 
@@ -25,6 +31,11 @@ namespace Shop.Repository.Repository.Implementation
         {
             var users = await _db.User
                 .ToListAsync();
+
+            if (users is null)
+            {
+                throw new EntityNotFoundException($"{nameof(User)} doesn't exists");
+            }
 
             return users;
         }
@@ -34,6 +45,11 @@ namespace Shop.Repository.Repository.Implementation
             var user = await _db.User
                 .SingleOrDefaultAsync(e => e.Id == id);
 
+            if (user is null)
+            {
+                throw new EntityNotFoundException($"{nameof(Article)} doesn't exist");
+            }
+
             return user;
         }
 
@@ -42,9 +58,14 @@ namespace Shop.Repository.Repository.Implementation
             throw new NotImplementedException();
         }
 
-        public Task<User> Update(User entity)
+        public async Task<User> Update(User entity)
         {
-            throw new NotImplementedException();
+            var userForUpdate = await GetById(entity.Id);
+
+            _db.Entry(userForUpdate).State = EntityState.Detached;
+            _db.Update(entity);
+
+            return entity;
         }
     }
 }

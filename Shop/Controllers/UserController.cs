@@ -3,6 +3,7 @@ using Infrastructure.Service.Interfaces;
 using Infrastructure.Util;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Shop.Service.Interfaces.Proxy;
 
 namespace Shop.Api.Controllers
 {
@@ -10,15 +11,29 @@ namespace Shop.Api.Controllers
     /// User controller for autentication
     /// </summary>
     [Authorize]
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class UserController : ControllerBase
     {
         private readonly IAuthService _service;
+        private readonly IProxyService<User> _userService;
 
-        public UserController(IAuthService service)
+        public UserController(IAuthService service, IProxyService<User> userService)
         {
             _service = service;
+            _userService = userService;
+        }
+
+        /// <summary>
+        /// Get user by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet("{id}")]
+        public async Task<ActionResult<User>> GetById(int id)
+        {
+            var article = await _userService.GetById(id);
+            return Ok(article);
         }
 
         /// <summary>
@@ -29,9 +44,9 @@ namespace Shop.Api.Controllers
         /// <returns></returns>
         [AllowAnonymous]
         [HttpPost("authorize")]
-        public async Task<ActionResult<IEnumerable<Article>>> Authorize([FromBody] string username, [FromBody] string password)
+        public async Task<ActionResult<IEnumerable<Article>>> Authorize([FromBody] LoginDto login)
         {
-            var token = await _service.Authorize(username, password);
+            var token = await _service.Authorize(login.Username, login.Password);
 
             if (token == null)
             {
@@ -51,12 +66,6 @@ namespace Shop.Api.Controllers
         public async Task<ActionResult<Article>> GenerateToken(TokenModelDto tokenModel)
         {
             var token = await _service.GenerateRefreshToken(tokenModel);
-
-            if (token == null)
-            {
-                return NotFound();
-            }
-
             return Ok(token);
         }
 
@@ -69,12 +78,6 @@ namespace Shop.Api.Controllers
         public async Task<ActionResult<Article>> RevokeById(int id)
         {
             var status = await _service.Revoke(id);
-
-            if (status)
-            {
-                return NotFound();
-            }
-
             return Ok(status);
         }
 
@@ -86,12 +89,6 @@ namespace Shop.Api.Controllers
         public async Task<ActionResult<Article>> RevokeAll()
         {
             var status = await _service.RevokeAll();
-
-            if (status)
-            {
-                return NotFound();
-            }
-
             return Ok(status);
         }
     }

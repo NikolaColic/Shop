@@ -28,12 +28,6 @@ namespace Shop.Api.Controllers
         public async Task<ActionResult<IEnumerable<Article>>> Get()
         {
             var articles = await _service.GetAll();
-
-            if(articles == null)
-            {
-                return NotFound();
-            }
-
             return Ok(articles);
         }
 
@@ -46,12 +40,6 @@ namespace Shop.Api.Controllers
         public async Task<ActionResult<Article>> GetById(int id)
         {
             var article = await _service.GetById(id);
-
-            if (article == null)
-            {
-                return NotFound();
-            }
-
             return Ok(article);
         }
 
@@ -65,12 +53,6 @@ namespace Shop.Api.Controllers
         public async Task<ActionResult<Article>> Buy(int id)
         {
             var article = await _service.Buy(id);
-
-            if (article == null)
-            {
-                return NotFound();
-            }
-
             return Ok(article);
         }
 
@@ -84,12 +66,6 @@ namespace Shop.Api.Controllers
         public async Task<ActionResult<Article>> Order([FromBody] List<int> keys)
         {
             var articles = await _service.Order(keys);
-
-            if (articles == null)
-            {
-                return NotFound();
-            }
-
             return Ok(articles);
         }
 

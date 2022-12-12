@@ -1,5 +1,6 @@
 ﻿using Data.Entities;
 using Infrastructure.AppConfig.Interfaces;
+using Infrastructure.Execution.Interfaces;
 using Infrastructure.Service.Interfaces;
 using LazyCache;
 using Shop.Service.Constants;
@@ -12,12 +13,14 @@ namespace Shop.Service.Implementations.Proxy
         private readonly IGenericService<User> _articleService;
         private readonly IAppCache _appCache;
         private readonly IAppConfig _appConfig;
+        private readonly IUserInfo _userInfo;
 
-        public UserProxyService(IGenericService<User> articleService, IAppCache appCache, IAppConfig appConfig)
+        public UserProxyService(IGenericService<User> articleService, IAppCache appCache, IAppConfig appConfig, IUserInfo userInfo)
         {
             _articleService = articleService;
             _appCache = appCache;
             _appConfig = appConfig;
+            _userInfo = userInfo;
         }
 
         public async Task<IEnumerable<User>> GetAll()
@@ -31,7 +34,7 @@ namespace Shop.Service.Implementations.Proxy
 
             articles = await _articleService.GetAll();
 
-            _appCache.Add(CacheKeyConstants.Users, articles, DateTimeOffset.FromUnixTimeSeconds(_appConfig.CacheTime));
+            _appCache.Add(CacheKeyConstants.Users, articles);
 
             return articles;
         }
@@ -47,38 +50,28 @@ namespace Shop.Service.Implementations.Proxy
 
             article = await _articleService.GetById(id);
 
-            _appCache.Add($"{CacheKeyConstants.User}{id}", article, DateTimeOffset.FromUnixTimeSeconds(_appConfig.CacheTime));
+            _appCache.Add($"{CacheKeyConstants.User}{id}", article, DateTimeOffset.UtcNow.AddSeconds(_appConfig.CacheTime));
 
             return article;
         }
 
-        public async Task<User> Insert(User entity)
+        public async Task<User> Insert(User user)
         {
-            entity = await _articleService.Insert(entity);
+            user = await _articleService.Insert(user);
 
-            if (entity == null)
-            {
-                return null;
-            }
+            _appCache.Add($"{CacheKeyConstants.User}{user.Id}", user, DateTimeOffset.FromUnixTimeSeconds(_appConfig.CacheTime));
 
-            _appCache.Add($"{CacheKeyConstants.User}{entity.Id}", entity, DateTimeOffset.FromUnixTimeSeconds(_appConfig.CacheTime));
-
-            return entity;
+            return user;
         }
 
-        public async Task<User> Update(User entity)
+        public async Task<User> Update(User user)
         {
-            entity = await _articleService.Update(entity);
+            user = await _articleService.Update(user);
 
-            if (entity == null)
-            {
-                return null;
-            }
-
-            _appCache.Remove($"{CacheKeyConstants.User}{entity.Id}");
-            _appCache.Add($"{CacheKeyConstants.User}{entity.Id}", entity, DateTimeOffset.FromUnixTimeSeconds(_appConfig.CacheTime));
+            _appCache.Remove($"{CacheKeyConstants.User}{user.Id}");
+            _appCache.Add($"{CacheKeyConstants.User}{user.Id}", user, DateTimeOffset.FromUnixTimeSeconds(_appConfig.CacheTime));
             
-            return entity;
+            return user;
         }
     }
 }

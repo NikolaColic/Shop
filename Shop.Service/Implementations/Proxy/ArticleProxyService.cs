@@ -1,7 +1,6 @@
 ﻿
 using Data.Entities;
 using Infrastructure.AppConfig.Interfaces;
-using Infrastructure.Service.Interfaces;
 using LazyCache;
 using Shop.Service.Constants;
 using Shop.Service.Interfaces;
@@ -24,16 +23,11 @@ namespace Shop.Service.Implementations.Proxy
 
         public async Task<Article> Buy(int key)
         {
-            var entity = await _articleService.Buy(key);
+            var article = await _articleService.Buy(key);
 
-            if (entity == null)
-            {
-                return null;
-            }
-
-            _appCache.Remove($"{CacheKeyConstants.Article}{entity.Key}");
-            _appCache.Add($"{CacheKeyConstants.Article}{entity.Key}", entity, DateTimeOffset.FromUnixTimeSeconds(_appConfig.CacheTime));
-            return entity;
+            _appCache.Remove($"{CacheKeyConstants.Article}{article.Key}");
+            _appCache.Add($"{CacheKeyConstants.Article}{article.Key}", article, DateTimeOffset.FromUnixTimeSeconds(_appConfig.CacheTime));
+            return article;
         }
 
         public async Task<IEnumerable<Article>> GetAll()
@@ -71,24 +65,14 @@ namespace Shop.Service.Implementations.Proxy
         public async Task<Article> Insert(Article entity)
         {
             entity = await _articleService.Insert(entity);
-
-            if (entity == null)
-            {
-                return null;
-            }
-
             _appCache.Add($"{CacheKeyConstants.Article}{entity.Key}", entity, DateTimeOffset.FromUnixTimeSeconds(_appConfig.CacheTime));
+
             return entity;
         }
 
         public async Task<List<Article>> Order(List<int> keys)
         {
             var articles = await _articleService.Order(keys);
-
-            if (articles == null)   
-            {
-                return null;
-            }
 
             foreach (var article in articles)
             {
@@ -101,11 +85,6 @@ namespace Shop.Service.Implementations.Proxy
         public async Task<Article> Update(Article entity)
         {
             entity = await _articleService.Update(entity);
-
-            if (entity == null)
-            {
-                return null;
-            }
 
             _appCache.Remove($"{CacheKeyConstants.Article}{entity.Key}");
             _appCache.Add($"{CacheKeyConstants.Article}{entity.Key}", entity, DateTimeOffset.FromUnixTimeSeconds(_appConfig.CacheTime));

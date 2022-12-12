@@ -1,4 +1,5 @@
 ﻿using Data.Entities;
+using Infrastructure.Exceptions;
 using Infrastructure.Execution.Interfaces;
 using Infrastructure.Repository.Interfaces;
 using Infrastructure.Service.Interfaces;
@@ -22,11 +23,6 @@ namespace Shop.Service.Implementations
         {
             var article = await _unitOfWork.Repository.GetById(key);
             
-            if(article == null)
-            {
-                //poziva se vendor
-            }
-
             article.IsSold = true;
             article.UserId = userInfo.Id;
             article.SoldDate = DateTime.Now;
@@ -70,6 +66,7 @@ namespace Shop.Service.Implementations
 
             articles = await articleRepositoryList.AddRange(articles);
             await _unitOfWork.Commit();
+
             return articles;
         }
 
