@@ -2,9 +2,9 @@
 using Infrastructure.Exceptions;
 using Infrastructure.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Shop.Repository.EF;
+using Vendor.Api.Repository.EF;
 
-namespace Shop.Repository.Repository.Implementation
+namespace Vendor.Api.Repository
 {
     public class ArticleRepository : IRepositoryList<Article>
     {
@@ -46,9 +46,18 @@ namespace Shop.Repository.Repository.Implementation
             return article;
         }
 
-        public Task<List<Article>> GetByIds(List<int> ids)
+        public async Task<List<Article>> GetByIds(List<int> ids)
         {
-            throw new NotImplementedException();
+            var articles = await _db.Article
+                .Where(e => ids.Contains(e.Key))
+                .ToListAsync();
+
+            if (articles is null)
+            {
+                throw new EntityNotFoundException($"{nameof(Article)} doesn't exists");
+            }
+
+            return articles;
         }
 
         public async Task<Article> Insert(Article entity)

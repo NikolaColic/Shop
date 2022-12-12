@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+option csharp_namespace = "Enigmatry.Grpc";
+
+
+
+service ArticleGrpc {
+	rpc GetAll (ArticleEmptyGrpc) returns (ArticleListGrpc) {}
+	rpc GetById (ArticleIdGrpc) returns (ArticleDtoGrpc) {}
+	rpc Buy (ArticleBuyGrpc) returns (ArticleListGrpc) {}
+}
+
+message ArticleEmptyGrpc {}
+
+message ActorsMessageResponse {
+	bool signal = 1; 
+	string poruka = 2;
+}
+message ArticleListGrpc {
+	
+	repeated ArticleDtoGrpc actors = 1;
+}
+
+message ArticleBuyGrpc {
+	int32 userId = 1;
+	repeated ArticleIdGrpc Articles = 2;
+}
+
+message ArticleIdGrpc {
+	int32 Key = 1;
+}
+message ArticleDtoGrpc {
+      string name =1;
+      uint64  price =2;
+      int32 key =3;
+}

@@ -1,4 +1,5 @@
 using Data.Entities;
+using Enigmatry.Grpc;
 using Infrastructure.AppConfig.Implementations;
 using Infrastructure.AppConfig.Interfaces;
 using Infrastructure.Execution.Interfaces;
@@ -65,9 +66,13 @@ builder.Services.AddScoped<IUnitOfWork<User>, UserUnitOfWork>();
 builder.Services.AddScoped<IRepositoryList<Article>, ArticleRepository>();
 builder.Services.AddScoped<IUserRepository<User>, UserRepository>();
 
-//UserInfo Registttration
+//UserInfo Registration
 var userInfo = new UserInfo();
 builder.Services.AddSingleton<IUserInfo>(userInfo);
+
+//gRPC Configuration
+
+builder.Services.AddGrpcClient<ArticleGrpc.ArticleGrpcClient>(o => o.Address = new Uri(configuration["ApiConfigs:Article:Uri"]));
 
 //Authentication Configuration
 

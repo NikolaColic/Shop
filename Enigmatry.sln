@@ -3,17 +3,22 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33122.133
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shop.Api", "Shop\Shop.Api.csproj", "{55E3528B-7552-407F-BDA2-3F32D083F984}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shop.Api", "Shop\Shop.Api.csproj", "{55E3528B-7552-407F-BDA2-3F32D083F984}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vendor.Api", "Vendor\Vendor.Api.csproj", "{0C28B58D-0932-48EF-A573-8334B5298EE6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Vendor.Api", "Vendor\Vendor.Api.csproj", "{0C28B58D-0932-48EF-A573-8334B5298EE6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{A2932E65-7FBA-4CB2-94DD-AF22D1807837}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{A2932E65-7FBA-4CB2-94DD-AF22D1807837}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Data", "Data\Data.csproj", "{F50A5562-0C64-4353-BA14-E2275E07716D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Data", "Data\Data.csproj", "{F50A5562-0C64-4353-BA14-E2275E07716D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shop.Service", "Shop.Service\Shop.Service.csproj", "{5B349B80-90AC-4E01-8D38-6FAEF9D3BB70}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shop.Service", "Shop.Service\Shop.Service.csproj", "{5B349B80-90AC-4E01-8D38-6FAEF9D3BB70}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shop.Repository", "Shop.Repository\Shop.Repository.csproj", "{E5CD5562-D787-4B8B-B731-4B3F31591A3B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shop.Repository", "Shop.Repository\Shop.Repository.csproj", "{E5CD5562-D787-4B8B-B731-4B3F31591A3B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "proto", "proto", "{4B891629-60AB-452F-A11C-4925F6E71A16}"
+	ProjectSection(SolutionItems) = preProject
+		article.proto = article.proto
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,13 +1,13 @@
 ﻿using Infrastructure.Repository.Interfaces;
 using Infrastructure.UnitOfWork.Interfaces;
-using Shop.Repository.EF;
+using Vendor.Api.Repository.EF;
 
-namespace Shop.Repository.UnitOfWork
+namespace Vendor.Api.Repository.UnitOfWork
 {
     public abstract class UnitOfWork<T> : IUnitOfWork<T> where T : class
     {
         public readonly ApplicationDbContext context;
-        public IRepository<T> Repository { get ; set ; }
+        public IRepository<T> Repository { get; set; }
 
         public UnitOfWork(ApplicationDbContext context)
         {
