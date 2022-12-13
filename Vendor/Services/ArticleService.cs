@@ -24,7 +24,7 @@ namespace Vendor.Api.Services
         {
             var articles = await _uow.Repository.GetAll();
             var articlesGrpc = _mapper.Map<List<ArticleDtoGrpc>>(articles);
-            return new ArticleListGrpc() { Actors = { articlesGrpc } };
+            return new ArticleListGrpc() { Articles = { articlesGrpc } };
         }
 
         public override async Task<ArticleDtoGrpc> GetById(ArticleIdGrpc request, ServerCallContext context)
@@ -36,9 +36,10 @@ namespace Vendor.Api.Services
 
         public async override Task<ArticleListGrpc> Buy(ArticleBuyGrpc request, ServerCallContext context)
         {
-            var articles = await repositoryList.GetByIds(request.Articles.Select(e => e.Key).ToList());
+            var keys = request.Articles.Split(',').Select(e => int.Parse(e)).ToList();
+            var articles = await repositoryList.GetByIds(keys);
 
-            foreach(var article in articles)
+            foreach (var article in articles)
             {
                 article.IsSold = true;
                 article.SoldDate = DateTime.Now;
@@ -48,7 +49,7 @@ namespace Vendor.Api.Services
             await _uow.Commit();
 
             var articlesGrpc = _mapper.Map<List<ArticleDtoGrpc>>(articles);
-            return new ArticleListGrpc() { Actors = { articlesGrpc } };
+            return new ArticleListGrpc() { Articles = { articlesGrpc } };
         }
 
     }

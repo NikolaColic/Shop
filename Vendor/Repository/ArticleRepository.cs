@@ -23,12 +23,8 @@ namespace Vendor.Api.Repository
         public async Task<IEnumerable<Article>> GetAll()
         {
             var articles = await _db.Article
+                .Where(e => !e.IsSold)
                 .ToListAsync();
-
-            if (articles is null)
-            {
-                throw new EntityNotFoundException($"{nameof(Article)} doesn't exists");
-            }
 
             return articles;
         }
@@ -36,7 +32,7 @@ namespace Vendor.Api.Repository
         public async Task<Article> GetById(int id)
         {
             var article = await _db.Article
-                .SingleOrDefaultAsync(e => e.Id == id);
+                .FirstOrDefaultAsync(e => e.Key == id && !e.IsSold);
 
             if (article is null)
             {

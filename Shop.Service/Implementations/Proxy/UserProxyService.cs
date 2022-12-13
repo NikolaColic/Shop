@@ -1,6 +1,5 @@
 ﻿using Data.Entities;
 using Infrastructure.AppConfig.Interfaces;
-using Infrastructure.Execution.Interfaces;
 using Infrastructure.Service.Interfaces;
 using LazyCache;
 using Shop.Service.Constants;
@@ -13,14 +12,12 @@ namespace Shop.Service.Implementations.Proxy
         private readonly IGenericService<User> _articleService;
         private readonly IAppCache _appCache;
         private readonly IAppConfig _appConfig;
-        private readonly IUserInfo _userInfo;
 
-        public UserProxyService(IGenericService<User> articleService, IAppCache appCache, IAppConfig appConfig, IUserInfo userInfo)
+        public UserProxyService(IGenericService<User> articleService, IAppCache appCache, IAppConfig appConfig)
         {
             _articleService = articleService;
             _appCache = appCache;
             _appConfig = appConfig;
-            _userInfo = userInfo;
         }
 
         public async Task<IEnumerable<User>> GetAll()
@@ -59,7 +56,7 @@ namespace Shop.Service.Implementations.Proxy
         {
             user = await _articleService.Insert(user);
 
-            _appCache.Add($"{CacheKeyConstants.User}{user.Id}", user, DateTimeOffset.FromUnixTimeSeconds(_appConfig.CacheTime));
+            _appCache.Add($"{CacheKeyConstants.User}{user.Id}", user, DateTimeOffset.UtcNow.AddSeconds(_appConfig.CacheTime));
 
             return user;
         }
@@ -69,8 +66,8 @@ namespace Shop.Service.Implementations.Proxy
             user = await _articleService.Update(user);
 
             _appCache.Remove($"{CacheKeyConstants.User}{user.Id}");
-            _appCache.Add($"{CacheKeyConstants.User}{user.Id}", user, DateTimeOffset.FromUnixTimeSeconds(_appConfig.CacheTime));
-            
+            _appCache.Add($"{CacheKeyConstants.User}{user.Id}", user, DateTimeOffset.UtcNow.AddSeconds(_appConfig.CacheTime));
+
             return user;
         }
     }

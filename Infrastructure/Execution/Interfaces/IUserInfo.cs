@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace Infrastructure.Execution.Interfaces
+﻿namespace Infrastructure.Execution.Interfaces
 {
     public interface IUserInfo
     {
@@ -9,6 +7,6 @@ namespace Infrastructure.Execution.Interfaces
         public string Surname { get; set; }
         public string Username { get; set; }
         public string Role { get; set; }
-        public bool IsAdmin { get; set; }  
+        public bool IsAdmin { get; set; }
     }
 }

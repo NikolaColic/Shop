@@ -1,6 +1,7 @@
 ﻿using Data.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Shop.Api.Models;
 using Shop.Service.Interfaces.Proxy;
 
 namespace Shop.Api.Controllers
@@ -46,13 +47,13 @@ namespace Shop.Api.Controllers
         /// <summary>
         /// Customer buy article
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="key"></param>
         /// <returns></returns>
-        [Authorize(Policy = "Customer")]
+        //[Authorize(Policy = "Customer")]
         [HttpPost("{key}/buy")]
-        public async Task<ActionResult<Article>> Buy(int id)
+        public async Task<ActionResult<Article>> Buy(int key)
         {
-            var article = await _service.Buy(id);
+            var article = await _service.Buy(key);
             return Ok(article);
         }
 
@@ -63,11 +64,10 @@ namespace Shop.Api.Controllers
         /// <returns></returns>
         [Authorize(Policy = "Admin")]
         [HttpPost("order")]
-        public async Task<ActionResult<Article>> Order([FromBody] List<int> keys)
+        public async Task<ActionResult<Article>> Order([FromBody] OrderCreate order)
         {
-            var articles = await _service.Order(keys);
+            var articles = await _service.Order(order.Keys);
             return Ok(articles);
         }
-
     }
 }

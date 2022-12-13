@@ -7,7 +7,7 @@ namespace Shop.Repository.UnitOfWork
     public abstract class UnitOfWork<T> : IUnitOfWork<T> where T : class
     {
         public readonly ApplicationDbContext context;
-        public IRepository<T> Repository { get ; set ; }
+        public IRepository<T> Repository { get; set; }
 
         public UnitOfWork(ApplicationDbContext context)
         {

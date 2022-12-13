@@ -4,7 +4,7 @@ using System.Net;
 
 namespace Shop.Api.Middleware
 {
-    public class ExceptionMiddleware 
+    public class ExceptionMiddleware
     {
         private readonly RequestDelegate _next;
         private readonly ILogger _logger;

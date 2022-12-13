@@ -16,9 +16,11 @@ using Shop.Repository.EF;
 using Shop.Repository.Repository.Implementation;
 using Shop.Repository.UnitOfWork;
 using Shop.Service.Implementations;
+using Shop.Service.Implementations.Grpc;
 using Shop.Service.Implementations.Proxy;
 using Shop.Service.Interfaces;
 using Shop.Service.Interfaces.Proxy;
+using Shop.Service.Profiles;
 using System.Security.Claims;
 using System.Text;
 
@@ -55,6 +57,7 @@ builder.Services.AddScoped<IProxyService<User>, UserProxyService>();
 builder.Services.AddScoped<IArticleService, ArticleService>();
 builder.Services.AddScoped<IGenericService<User>, UserService>();
 builder.Services.AddScoped<IAuthService, UserService>();
+builder.Services.AddScoped<IGrpcArticleService, ArticleGrpcServices>();
 
 //UoW Registration 
 
@@ -72,7 +75,11 @@ builder.Services.AddSingleton<IUserInfo>(userInfo);
 
 //gRPC Configuration
 
-builder.Services.AddGrpcClient<ArticleGrpc.ArticleGrpcClient>(o => o.Address = new Uri(configuration["ApiConfigs:Article:Uri"]));
+builder.Services.AddGrpcClient<ArticleGrpc.ArticleGrpcClient>(o => o.Address = new Uri(configuration["Grpc:VendorUrl"]));
+
+//Automapper configuration
+
+builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 //Authentication Configuration
 
@@ -164,7 +171,7 @@ app.UseCors(Cors);
 app.UseSwaggerUI();
 
 
-app.ConfigureExceptionMiddleware(); 
+app.ConfigureExceptionMiddleware();
 app.UseHttpsRedirection();
 
 app.UseAuthentication();

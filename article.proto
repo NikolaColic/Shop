@@ -12,18 +12,14 @@ service ArticleGrpc {
 
 message ArticleEmptyGrpc {}
 
-message ActorsMessageResponse {
-	bool signal = 1; 
-	string poruka = 2;
-}
 message ArticleListGrpc {
 	
-	repeated ArticleDtoGrpc actors = 1;
+	repeated ArticleDtoGrpc articles = 1;
 }
 
 message ArticleBuyGrpc {
 	int32 userId = 1;
-	repeated ArticleIdGrpc Articles = 2;
+	string Articles = 2;
 }
 
 message ArticleIdGrpc {

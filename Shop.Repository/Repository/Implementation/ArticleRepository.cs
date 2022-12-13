@@ -23,6 +23,7 @@ namespace Shop.Repository.Repository.Implementation
         public async Task<IEnumerable<Article>> GetAll()
         {
             var articles = await _db.Article
+                .Where(e => !e.IsSold)
                 .ToListAsync();
 
             if (articles is null)
@@ -36,12 +37,7 @@ namespace Shop.Repository.Repository.Implementation
         public async Task<Article> GetById(int id)
         {
             var article = await _db.Article
-                .SingleOrDefaultAsync(e => e.Id == id);
-
-            if (article is null)
-            {
-                throw new EntityNotFoundException($"{nameof(Article)} doesn't exist");
-            }
+                .FirstOrDefaultAsync(e => e.Key == id && !e.IsSold);
 
             return article;
         }

@@ -61,29 +61,20 @@ namespace Shop.Service.Implementations
             {
                 throw new Exception("User repository doesn't exist");
             }
-            
+
             var user = await userRepository.CheckUser(username, password);
+            var token = await GenerateTokens(user);
 
-            var tokenModel = CreateTokens(user);
-            var expires = Convert.ToDouble(_configuration["JWT:RefreshTokenExpireInDays"]);
-
-            user.RefreshToken = tokenModel.RefreshToken;
-            user.RefreshTokenExpiryTime = DateTime.Now.AddDays(expires);
-
-            await _unitOfWork.Repository.Update(user);
-            await _unitOfWork.Commit();
-
-            return tokenModel;
+            return token;
         }
 
         public async Task<TokenModelDto> GenerateRefreshToken(TokenModelDto tokenModel)
         {
             var identity = GetInfoFromAccessToken(tokenModel.AccessToken);
 
-            var userId = identity.Claims
-                .FirstOrDefault(e => e.Type == ClaimConstants.Id)?.Value;
+            var userId = identity.Claims.FirstOrDefault(e => e.Type == ClaimConstants.Id)?.Value;
 
-            if(userId == null)
+            if (userId == null)
             {
                 throw new BadRequestEntityException("Claim id doesn't exist");
             }
@@ -95,14 +86,20 @@ namespace Shop.Service.Implementations
                 throw new UnproccesableException("Refresh token isn't valid");
             }
 
+            var token = await GenerateTokens(user);
+
+            return token;
+        }
+
+        private async Task<TokenModelDto> GenerateTokens(User user)
+        {
             var token = CreateTokens(user);
             var expires = Convert.ToDouble(_configuration["JWT:RefreshTokenExpireInDays"]);
-            user.RefreshToken = tokenModel.RefreshToken;
+            user.RefreshToken = token.RefreshToken;
             user.RefreshTokenExpiryTime = DateTime.Now.AddDays(expires);
 
             await _unitOfWork.Repository.Update(user);
             await _unitOfWork.Commit();
-
             return token;
         }
 
@@ -139,7 +136,7 @@ namespace Shop.Service.Implementations
             return new TokenModelDto(accessToken, refreshToken);
         }
 
-        private string CreateRefreshToken()
+        private static string CreateRefreshToken()
         {
             var randomNumber = new byte[32];
             using var rng = RandomNumberGenerator.Create();
@@ -156,7 +153,7 @@ namespace Shop.Service.Implementations
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Subject = 
+                Subject =
                 new ClaimsIdentity(new[]
                 {
                     new Claim(ClaimConstants.Id, user.Id.ToString()),
@@ -200,8 +197,8 @@ namespace Shop.Service.Implementations
             var tokenHandler = new JwtSecurityTokenHandler();
 
             var identity = tokenHandler.ValidateToken(accessToken, tokenValidationParameters, out SecurityToken securityToken);
-            
-            if (securityToken is not JwtSecurityToken jwtSecurityToken)
+
+            if (securityToken is not JwtSecurityToken)
             {
                 throw new BadRequestEntityException("Invalid token");
             }

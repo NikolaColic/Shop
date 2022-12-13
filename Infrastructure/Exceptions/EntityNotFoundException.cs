@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Infrastructure.Exceptions
+﻿namespace Infrastructure.Exceptions
 {
     [Serializable]
-    public class EntityNotFoundException: Exception
+    public class EntityNotFoundException : Exception
     {
         public EntityNotFoundException() { }
 

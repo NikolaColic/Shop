@@ -19,7 +19,7 @@ namespace Shop.Repository.Repository.Implementation
             var user = await this._db.User
                 .FirstOrDefaultAsync(e => e.Username == username && e.Password == password);
 
-            if(user is null)
+            if (user is null)
             {
                 throw new BadRequestEntityException("Bad username or password!");
             }

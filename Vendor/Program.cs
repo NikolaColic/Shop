@@ -1,17 +1,20 @@
-using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Data.Entities;
+using Infrastructure.Repository.Interfaces;
+using Infrastructure.UnitOfWork.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Vendor.Api.Profiles;
+using Vendor.Api.Repository;
 using Vendor.Api.Repository.EF;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
+using Vendor.Api.Repository.UnitOfWork;
+using Vendor.Api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.WebHost.ConfigureKestrel(options =>
 {
     // Setup a HTTP/2 endpoint without TLS.
-    options.ListenLocalhost(5000, o => o.Protocols =
-        HttpProtocols.Http2);
+    //options.ListenLocalhost(5001, o => o.Protocols =
+    //    HttpProtocols.Http2);
 });
 
 // Add services to the container.
@@ -31,6 +34,13 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlSer
 
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 
+//UoW Registration 
+
+builder.Services.AddScoped<IUnitOfWork<Article>, ArticleUnitOfWork>();
+
+//Repository Registration
+
+builder.Services.AddScoped<IRepositoryList<Article>, ArticleRepository>();
 
 var app = builder.Build();
 
@@ -46,5 +56,6 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapGrpcService<ArticleService>();
 
 app.Run();

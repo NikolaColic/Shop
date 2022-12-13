@@ -1,6 +1,11 @@
-﻿namespace Shop.Service.Interfaces
+﻿using Data.Entities;
+
+namespace Shop.Service.Interfaces
 {
-    public interface IGrpcArticleService : IArticleService
+    public interface IGrpcArticleService
     {
+        Task<List<Article>> GetAll();
+        Task<Article> GetById(int id);
+        Task<List<Article>> Buy(List<int> keys);
     }
 }

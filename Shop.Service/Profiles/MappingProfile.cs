@@ -2,13 +2,13 @@
 using Data.Entities;
 using Enigmatry.Grpc;
 
-namespace Vendor.Api.Profiles
+namespace Shop.Service.Profiles
 {
     public class MappingProfile : Profile
     {
         public MappingProfile()
         {
-            CreateMap<Article, ArticleDtoGrpc>();
+            CreateMap<ArticleDtoGrpc, Article>();
         }
     }
 }

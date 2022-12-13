@@ -1,8 +1,6 @@
 ﻿using Infrastructure.Execution.Interfaces;
-using Microsoft.AspNetCore.Diagnostics;
 using Shop.Api.Constants;
 using Shop.Service.Constants;
-using System.Net;
 using System.Security.Claims;
 
 namespace Shop.Api.Middleware
@@ -26,7 +24,7 @@ namespace Shop.Api.Middleware
 
             var userInfo = httpContext.RequestServices.GetService(typeof(IUserInfo)) as IUserInfo;
 
-            if(userInfo == null)
+            if (userInfo == null)
             {
                 _logger.LogInformation("IUserInfo is null");
                 await _next(httpContext);
@@ -34,7 +32,7 @@ namespace Shop.Api.Middleware
 
             var claims = httpContext.User.Claims;
 
-            if(claims == null || !claims.Any())
+            if (claims == null || !claims.Any())
             {
                 _logger.LogInformation("Claims don't exists");
                 await _next(httpContext);
@@ -42,16 +40,16 @@ namespace Shop.Api.Middleware
 
             userInfo.Username = claims.FirstOrDefault(e => e.Type == ClaimConstants.Username)?.Value;
             userInfo.Name = claims.FirstOrDefault(e => e.Type == ClaimTypes.Name)?.Value;
-            userInfo.Surname= claims.FirstOrDefault(e => e.Type == ClaimTypes.Surname)?.Value;
+            userInfo.Surname = claims.FirstOrDefault(e => e.Type == ClaimTypes.Surname)?.Value;
             userInfo.Role = claims.FirstOrDefault(e => e.Type == ClaimTypes.Role)?.Value;
             userInfo.IsAdmin = userInfo.Role == RoleConstants.Admin;
 
             var userId = claims.FirstOrDefault(e => e.Type == ClaimConstants.Id)?.Value;
-            if(int.TryParse(userId,out var id))
+            if (int.TryParse(userId, out var id))
             {
                 userInfo.Id = id;
             }
-            
+
             await _next(httpContext);
         }
     }
