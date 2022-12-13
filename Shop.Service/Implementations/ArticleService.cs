@@ -49,13 +49,6 @@ namespace Shop.Service.Implementations
             return article;
         }
 
-        private void SetBuyValues(Article article)
-        {
-            article.IsSold = true;
-            article.UserId = userInfo.Id;
-            article.SoldDate = DateTime.Now;
-        }
-
         public async Task<IEnumerable<Article>> GetAll()
         {
             var articles = (await _unitOfWork.Repository.GetAll())
@@ -131,6 +124,12 @@ namespace Shop.Service.Implementations
             await _unitOfWork.Commit();
 
             return entity;
+        }
+        private void SetBuyValues(Article article)
+        {
+            article.IsSold = true;
+            article.UserId = userInfo.Id;
+            article.SoldDate = DateTime.Now;
         }
     }
 }

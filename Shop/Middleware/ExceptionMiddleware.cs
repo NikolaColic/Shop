@@ -30,7 +30,7 @@ namespace Shop.Api.Middleware
             var statusCode = exception switch
             {
                 EntityNotFoundException => (int)HttpStatusCode.NotFound,
-                BadRequestEntityException => (int)HttpStatusCode.UnprocessableEntity,
+                BadRequestEntityException => (int)HttpStatusCode.BadRequest,
                 _ => (int)HttpStatusCode.InternalServerError,
             };
 

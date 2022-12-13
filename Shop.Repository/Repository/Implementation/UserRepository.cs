@@ -16,7 +16,7 @@ namespace Shop.Repository.Repository.Implementation
 
         public async Task<User> CheckUser(string username, string password)
         {
-            var user = await this._db.User
+            var user = await _db.User
                 .FirstOrDefaultAsync(e => e.Username == username && e.Password == password);
 
             if (user is null)
@@ -34,7 +34,7 @@ namespace Shop.Repository.Repository.Implementation
 
             if (users is null)
             {
-                throw new EntityNotFoundException($"{nameof(User)} doesn't exists");
+                throw new EntityNotFoundException($"Users don't exists");
             }
 
             return users;
@@ -47,7 +47,7 @@ namespace Shop.Repository.Repository.Implementation
 
             if (user is null)
             {
-                throw new EntityNotFoundException($"{nameof(Article)} doesn't exist");
+                throw new EntityNotFoundException($"{nameof(User)} doesn't exist");
             }
 
             return user;

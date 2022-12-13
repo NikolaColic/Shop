@@ -28,7 +28,7 @@ namespace Shop.Repository.Repository.Implementation
 
             if (articles is null)
             {
-                throw new EntityNotFoundException($"{nameof(Article)} doesn't exists");
+                throw new EntityNotFoundException($"Articles don't exists");
             }
 
             return articles;
@@ -55,7 +55,12 @@ namespace Shop.Repository.Repository.Implementation
 
         public async Task<Article> Update(Article entity)
         {
-            var articleForUpdate = await GetById(entity.Id);
+            var articleForUpdate = await GetById(entity.Key);
+
+            if(articleForUpdate == null)
+            {
+                throw new EntityNotFoundException($"{nameof(Article)} doesn't exist");
+            }
 
             _db.Entry(articleForUpdate).State = EntityState.Detached;
             _db.Update(entity);

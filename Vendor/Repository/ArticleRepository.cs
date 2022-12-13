@@ -36,7 +36,7 @@ namespace Vendor.Api.Repository
 
             if (article is null)
             {
-                throw new EntityNotFoundException($"{nameof(Article)} doesn't exist");
+                throw new EntityNotFoundException($"Article don't exist");
             }
 
             return article;
@@ -64,7 +64,7 @@ namespace Vendor.Api.Repository
 
         public async Task<Article> Update(Article entity)
         {
-            var articleForUpdate = await GetById(entity.Id);
+            var articleForUpdate = await GetById(entity.Key);
 
             _db.Entry(articleForUpdate).State = EntityState.Detached;
             _db.Update(entity);
