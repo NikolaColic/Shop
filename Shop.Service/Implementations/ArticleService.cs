@@ -11,13 +11,13 @@ namespace Shop.Service.Implementations
     {
         private readonly IUnitOfWork<Article> _unitOfWork;
         private readonly IUserInfo userInfo;
-        private readonly IGrpcArticleService _grpcService;
+        private readonly IGrpcArticleService _articleGrpcService;
 
         public ArticleService(IUnitOfWork<Article> unitOfWork, IUserInfo userInfo, IGrpcArticleService grpcService)
         {
             _unitOfWork = unitOfWork;
             this.userInfo = userInfo;
-            _grpcService = grpcService;
+            _articleGrpcService = grpcService;
         }
 
         public async Task<Article> Buy(int key)
@@ -26,7 +26,7 @@ namespace Shop.Service.Implementations
 
             if (article == null)
             {
-                var articles = await _grpcService.Buy(new List<int>() { key });
+                var articles = await _articleGrpcService.Buy(new List<int>() { key });
 
                 if (articles == null || !articles.Any())
                 {
@@ -63,7 +63,7 @@ namespace Shop.Service.Implementations
 
             if (userInfo.IsAdmin)
             {
-                var articlesVendor = await _grpcService.GetAll();
+                var articlesVendor = await _articleGrpcService.GetAll();
 
                 if (articlesVendor != null)
                 {
@@ -78,11 +78,18 @@ namespace Shop.Service.Implementations
         {
             var article = await _unitOfWork.Repository.GetById(id);
 
-            if (article == null && userInfo.IsAdmin)
+            if (article == null )
             {
-                article = await _grpcService.GetById(id);
+                if (userInfo.IsAdmin)
+                {
+                    article = await _articleGrpcService.GetById(id);
 
-                if (article == null)
+                    if (article == null)
+                    {
+                        throw new EntityNotFoundException($"Article with key {id} doesn't exist");
+                    }
+                }
+                else
                 {
                     throw new EntityNotFoundException($"Article with key {id} doesn't exist");
                 }
@@ -100,7 +107,7 @@ namespace Shop.Service.Implementations
 
         public async Task<List<Article>> Order(List<int> keys)
         {
-            var articles = await _grpcService.Buy(keys);
+            var articles = await _articleGrpcService.Buy(keys);
 
             if (articles == null || !articles.Any())
             {

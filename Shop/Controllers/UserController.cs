@@ -74,6 +74,7 @@ namespace Shop.Api.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
+        [Authorize(Policy = "Admin")]
         [HttpPost("{id}/revoke")]
         public async Task<ActionResult<Article>> RevokeById(int id)
         {
@@ -85,6 +86,7 @@ namespace Shop.Api.Controllers
         /// Revoke refresh tokens for all users
         /// </summary>
         /// <returns></returns>
+        [Authorize(Policy = "Admin")]
         [HttpPost("revoke")]
         public async Task<ActionResult<Article>> RevokeAll()
         {

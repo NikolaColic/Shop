@@ -48,7 +48,7 @@ namespace Vendor.Api.Repository
                 .Where(e => ids.Contains(e.Key))
                 .ToListAsync();
 
-            if (articles is null)
+            if (!articles.Any())
             {
                 throw new EntityNotFoundException($"{nameof(Article)} doesn't exists");
             }
